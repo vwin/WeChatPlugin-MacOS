@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>keyword</key>
+		<string>在吗||在||哈喽||你好||您好</string>
+		<key>replyContent</key>
+		<string>您好, 我是他的小助手，有什么事情呢？告诉我吧，立即转达给我的主人</string>
+		<key>replyGroupEnable</key>
+		<false/>
+		<key>replyEnable</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>keyword</key>
+		<string>老公</string>
+		<key>replyContent</key>
+		<string>别瞎喊啊，我是有家室的人</string>
+		<key>replyGroupEnable</key>
+		<false/>
+		<key>replyEnable</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>keyword</key>
+		<string>帅哥</string>
+		<key>replyContent</key>
+		<string>美女, 好多人都这么认为</string>
+		<key>replyGroupEnable</key>
+		<false/>
+		<key>replyEnable</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>keyword</key>
+		<string>神经病</string>
+		<key>replyContent</key>
+		<string>你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。你才神经病，你全家都是神经病。</string>
+		<key>replyGroupEnable</key>
+		<false/>
+		<key>replyEnable</key>
+		<true/>
+	</dict>
+</array>
+</plist>
