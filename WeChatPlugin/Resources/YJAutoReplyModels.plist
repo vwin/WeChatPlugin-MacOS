@@ -42,5 +42,15 @@
 		<key>replyEnable</key>
 		<true/>
 	</dict>
+	<dict>
+		<key>keyword</key>
+		<string>你在干嘛||你在干吗||你在干嘛?||你在干吗?||你在干嘛？||你在干吗？||在干吗||在干嘛||在干吗?||在干嘛?||在干吗？||在干嘛？</string>
+		<key>replyContent</key>
+		<string>嗯，是的。要不你排下队稍等一会儿？马上回来~</string>
+		<key>replyGroupEnable</key>
+		<false/>
+		<key>replyEnable</key>
+		<true/>
+	</dict>
 </array>
 </plist>
