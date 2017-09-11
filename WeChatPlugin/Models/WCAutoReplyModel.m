@@ -18,6 +18,7 @@
 
         self.replyEnable = [dict[@"replyEnable"] boolValue];
         self.replyGroupEnable = [dict[@"replyGroupEnable"] boolValue];
+        self.enableRegex = [dict[@"enableRegex"] boolValue];
     }
     return self;
 }
@@ -27,7 +28,9 @@
     return @{@"replyEnable": @(self.replyEnable),
              @"keyword": self.keyword,
              @"replyContent": self.replyContent,
-             @"replyGroupEnable": @(self.replyGroupEnable)};
+             @"replyGroupEnable": @(self.replyGroupEnable),
+             @"enableRegex": @(self.enableRegex)
+             };
 }
 
 - (BOOL)hasEmptyKeywordOrReplyContent {

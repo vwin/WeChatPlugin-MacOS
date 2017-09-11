@@ -31,7 +31,7 @@
 
 - (void)initSubviews {
     self.selectBtn = ({
-        NSButton *btn = [NSButton checkboxWithTitle:@"" target:self action:@selector(clickSelectBtn:)];
+        NSButton *btn = [NSButton checkboxWithTitle:@"" target:self action:@selector(clickSelectAutoReplyBtn:)];
         btn.frame = NSMakeRect(5, 15, 20, 20);
         
         btn;
@@ -72,7 +72,8 @@
                         self.bottomLine]];
 }
 
-- (void)clickSelectBtn:(NSButton *)btn {
+- (void)clickSelectAutoReplyBtn:(NSButton *)btn {
+    
     self.model.replyEnable = btn.state;
 }
 

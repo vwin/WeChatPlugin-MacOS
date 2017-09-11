@@ -29,7 +29,7 @@ static NSString * const YJRemoteControlAppleScript = @"osascript /Applications/W
 #pragma mark - Function
 #define WECHAT_PLUGIN_MENU_TITLE @"微信小助手"
 #define START_PREVENTREVOKE @"开启消息防撤回"
-#define START_AUTO_REPLY @"开启自动回复"
+#define START_AUTO_REPLY @"自动回复设置"
 #define START_NEW_WECHAT @"再登录一个微信"
 #define REMORT_CONTROL_MAC @"远程控制Mac"
 

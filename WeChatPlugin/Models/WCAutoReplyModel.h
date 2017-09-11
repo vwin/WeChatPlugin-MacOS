@@ -16,6 +16,8 @@
 @property (nonatomic, assign) BOOL replyGroupEnable;        /**< 群聊自动回复是否开启 */
 @property (nonatomic, assign) BOOL replyEnable;             /**< 是否开启自动回复 */
 
+@property (nonatomic, assign) BOOL enableRegex;             /**< 是否开启正则匹配 */
+
 - (instancetype)initWithDict:(NSDictionary *)dict;
 
 - (NSDictionary *)dictionary;

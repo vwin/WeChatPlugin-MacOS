@@ -17,6 +17,7 @@
 @property (nonatomic, strong) NSTextField *autoReplyLabel;
 @property (nonatomic, strong) NSTextField *autoReplyContentField;
 @property (nonatomic, strong) NSButton *enableGroupReplyBtn;
+@property (nonatomic, strong) NSButton *enableRegexBtn;
 
 @end
 
@@ -32,16 +33,23 @@
 
 - (void)initSubviews {
     
+    self.enableRegexBtn = ({
+        NSButton *btn = [NSButton checkboxWithTitle:@"开启正则匹配" target:self action:@selector(clickEnableRegexBtn:)];
+        btn.frame = NSMakeRect(20, 15, 400, 20);
+        
+        btn;
+    });
+    
     self.enableGroupReplyBtn = ({
-        NSButton *btn = [NSButton checkboxWithTitle:@"是否开启群聊自动回复" target:self action:@selector(clickSelectBtn:)];
-        btn.frame = NSMakeRect(20, 10, 400, 20);
+        NSButton *btn = [NSButton checkboxWithTitle:@"开启群聊自动回复" target:self action:@selector(clickEnableGroupBtn:)];
+        btn.frame = NSMakeRect(20, 40, 400, 20);
         
         btn;
     });
     
     self.autoReplyContentField = ({
         NSTextField *textField = [[NSTextField alloc] init];
-        textField.frame = NSMakeRect(20, 40, 350, 175);
+        textField.frame = NSMakeRect(20, 70, 350, 175);
         textField.placeholderString = @"请输入自动回复的内容";
         textField.delegate = self;
         
@@ -50,14 +58,14 @@
     
     self.autoReplyLabel = ({
         NSTextField *label = [NSTextField labelWithString:@"自动回复："];
-        label.frame = NSMakeRect(20, 220, 350, 20);
+        label.frame = NSMakeRect(20, 250, 350, 20);
         
         label;
     });
     
     self.keywordTextField = ({
         NSTextField *textField = [[NSTextField alloc] init];
-        textField.frame = NSMakeRect(20, 260, 350, 50);
+        textField.frame = NSMakeRect(20, 290, 350, 50);
         textField.placeholderString = @"请输入关键字（ ‘*’ 为任何消息都回复，‘||’ 为匹配多个关键字）";
         textField.delegate = self;
         
@@ -66,20 +74,29 @@
     
     self.keywordLabel = ({
         NSTextField *label = [NSTextField labelWithString:@"关键字："];
-        label.frame = NSMakeRect(20, 315, 350, 20);
+        label.frame = NSMakeRect(20, 345, 350, 20);
         
         label;
     });
     
-    [self addSafeSubviews:@[self.enableGroupReplyBtn,
-                        self.autoReplyContentField,
-                        self.autoReplyLabel,
-                        self.keywordTextField,
-                        self.keywordLabel]];
+    [self addSafeSubviews:@[
+                            self.enableRegexBtn,
+                            self.enableGroupReplyBtn,
+                            self.autoReplyContentField,
+                            self.autoReplyLabel,
+                            self.keywordTextField,
+                            self.keywordLabel
+                            ]];
 }
 
-- (void)clickSelectBtn:(NSButton *)btn {
+- (void)clickEnableRegexBtn:(NSButton *)btn {
+    self.model.enableRegex = btn.state;
+}
+
+- (void)clickEnableGroupBtn:(NSButton *)btn {
+    
     self.model.replyGroupEnable = btn.state;
+    if (self.endEdit) self.endEdit();
 }
 
 - (void)viewDidMoveToSuperview {
@@ -97,12 +114,11 @@
     self.keywordTextField.stringValue = model.keyword != nil ? model.keyword : @"";
     self.autoReplyContentField.stringValue = model.replyContent != nil ? model.replyContent : @"";
     self.enableGroupReplyBtn.state = model.replyGroupEnable;
+    self.enableRegexBtn.state = model.enableRegex;
 }
 
 - (void)controlTextDidEndEditing:(NSNotification *)notification {
-    if (self.endEdit) {
-        self.endEdit();
-    }
+    if (self.endEdit) { self.endEdit(); }
 }
 
 - (void)controlTextDidChange:(NSNotification *)notification {
@@ -115,6 +131,7 @@
 }
 
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector {
+    
     BOOL result = NO;
     
     if (commandSelector == @selector(insertNewline:)) {
@@ -133,8 +150,6 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    
-    // Drawing code here.
 }
 
 @end

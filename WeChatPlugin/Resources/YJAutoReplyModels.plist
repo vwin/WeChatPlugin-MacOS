@@ -4,33 +4,39 @@
 <array>
 	<dict>
 		<key>keyword</key>
-		<string>在吗||在||哈喽||你好||您好</string>
+		<string>在吗||在||哈喽||你好||您好||在?||在？</string>
 		<key>replyContent</key>
-		<string>您好, 我是他的小助手，有什么事情呢？告诉我吧，立即转达给我的主人</string>
+		<string>您好, 我是他的小助手，有什么事情呢？告诉我吧，立即转达给我的主人||您好，主人在冬眠，请问有什么事?</string>
 		<key>replyGroupEnable</key>
 		<false/>
 		<key>replyEnable</key>
 		<true/>
+		<key>enableRegex</key>
+		<false/>
 	</dict>
 	<dict>
 		<key>keyword</key>
 		<string>老公</string>
 		<key>replyContent</key>
-		<string>别瞎喊啊，我是有家室的人</string>
+		<string>别瞎喊啊，我是有家室的人||咋了, 夫人</string>
 		<key>replyGroupEnable</key>
 		<false/>
 		<key>replyEnable</key>
 		<true/>
+		<key>enableRegex</key>
+		<false/>
 	</dict>
 	<dict>
 		<key>keyword</key>
 		<string>帅哥</string>
 		<key>replyContent</key>
-		<string>美女, 好多人都这么认为</string>
+		<string>美女, 好多人都这么认为||是不是想我了</string>
 		<key>replyGroupEnable</key>
 		<false/>
 		<key>replyEnable</key>
 		<true/>
+		<key>enableRegex</key>
+		<false/>
 	</dict>
 	<dict>
 		<key>keyword</key>
@@ -41,16 +47,20 @@
 		<false/>
 		<key>replyEnable</key>
 		<true/>
+		<key>enableRegex</key>
+		<false/>
 	</dict>
 	<dict>
 		<key>keyword</key>
 		<string>你在干嘛||你在干吗||你在干嘛?||你在干吗?||你在干嘛？||你在干吗？||在干吗||在干嘛||在干吗?||在干嘛?||在干吗？||在干嘛？</string>
 		<key>replyContent</key>
-		<string>嗯，是的。要不你排下队稍等一会儿？马上回来~</string>
+		<string>嗯，是的。要不你排下队稍等一会儿？马上回来~||你猜||我在洗澡||嗯，是的，在干</string>
 		<key>replyGroupEnable</key>
 		<false/>
 		<key>replyEnable</key>
 		<true/>
+		<key>enableRegex</key>
+		<false/>
 	</dict>
 </array>
 </plist>

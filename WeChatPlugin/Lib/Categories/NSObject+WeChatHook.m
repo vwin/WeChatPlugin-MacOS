@@ -35,6 +35,11 @@ static char kYJRemoteControlWindowControllerKey;
     // 微信多开
     yj_hookClassMethod(objc_getClass("CUtility"), @selector(HasWechatInstance), [self class], @selector(hook_HasWechatInstance));
     // 注入菜单
+    [self _setUp];
+    [self replaceAboutFilePathMethod];
+}
+
++ (void)_setUp{
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self addAssistantMenuItem];
     });
@@ -224,31 +229,63 @@ static char kYJRemoteControlWindowControllerKey;
     
     if (addMsg.msgType != 1 && addMsg.msgType != 3) return;
     
-    MessageService *service = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
     ContactStorage *contactStorage = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("ContactStorage")];
+    WCContactData *msgContact = [contactStorage GetContact:addMsg.fromUserName.string];
+    // 1.公众号消息
+    if (msgContact.m_uiFriendScene == 0 && ![addMsg.fromUserName.string containsString:@"@chatroom"]) { return;}
+    
+    // 2.非公众号
+    MessageService *service = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
     WCContactData *selfContact = [contactStorage GetSelfContact];
     
     NSArray *autoReplyModels = [[WeChatPluginConfig sharedInstance] autoReplyModels];
-    
     [autoReplyModels enumerateObjectsUsingBlock:^(WCAutoReplyModel *model, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        // 1. 自动回复是否开启
         if (!model.replyEnable) return ;
+        
+        // 2.自动回复的内容是否有
+        if (!model.replyContent || model.replyContent.length == 0) return;
+
+        // 3.聊天室自动回复开启状态
         if ([addMsg.fromUserName.string containsString:@"@chatroom"] && !model.replyGroupEnable) return;
         
         NSString *msgContent = addMsg.content.string;
         
+        // 5.截取聊天室聊天内容
         if ([addMsg.fromUserName.string containsString:@"@chatroom"]) {
             NSRange range = [msgContent rangeOfString:@":\n"];
             if (range.length != 0) {
                 msgContent = [msgContent substringFromIndex:range.location + range.length];
             }
         }
-        NSArray * keyWordArray = [model.keyword componentsSeparatedByString:@"||"];
-        [keyWordArray enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([keyword isEqualToString:@"*"] || [msgContent isEqualToString:keyword]) {
-                [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:model.replyContent atUserList:nil];
-            }
-        }];
         
+        // 6.自动回复内容
+        NSArray *replyArray = [model.replyContent componentsSeparatedByString:@"||"];
+        NSString *randomReplyContent = [replyArray objectAtIndex:(arc4random() % replyArray.count)];
+        
+        // 7.没有回复内容自动停止
+        if (randomReplyContent == nil || randomReplyContent.length == 0) { return;}
+        
+        if (model.enableRegex) {
+            NSString *regex = model.keyword;
+            NSError *error;
+            NSRegularExpression *regular = [NSRegularExpression regularExpressionWithPattern:regex options:NSRegularExpressionCaseInsensitive error:&error];
+            if (error) return;
+            NSInteger count = [regular numberOfMatchesInString:msgContent options:NSMatchingReportCompletion range:NSMakeRange(0, msgContent.length)];
+            if (count > 0) {
+                [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:randomReplyContent atUserList:nil];
+            }
+        } else {
+            
+            NSArray * keyWordArray = [model.keyword componentsSeparatedByString:@"||"];
+            
+            [keyWordArray enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([keyword isEqualToString:@"*"] || [msgContent isEqualToString:keyword]) {
+                    [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:randomReplyContent atUserList:nil];
+                }
+            }];
+        }
     }];
 }
 
@@ -268,4 +305,95 @@ static char kYJRemoteControlWindowControllerKey;
     }
 }
 
+#pragma mark - Support
++ (void)replaceAboutFilePathMethod {
+    yj_hookInstanceMethod(objc_getClass("JTStatisticManager"), @selector(statFilePath), [self class], @selector(hook_statFilePath));
+    yj_hookClassMethod(objc_getClass("CUtility"), @selector(getFreeDiskSpace), [self class], @selector(hook_getFreeDiskSpace));
+    yj_hookClassMethod(objc_getClass("MemoryMappedKV"), @selector(mappedKVPathWithID:), [self class], @selector(hook_mappedKVPathWithID:));
+    yj_hookClassMethod(objc_getClass("PathUtility"), @selector(getSysDocumentPath), [self class], @selector(hook_getSysDocumentPath));
+    yj_hookClassMethod(objc_getClass("PathUtility"), @selector(getSysLibraryPath), [self class], @selector(hook_getSysLibraryPath));
+    yj_hookClassMethod(objc_getClass("PathUtility"), @selector(getSysCachePath), [self class], @selector(hook_getSysCachePath));
+}
+
+- (id)hook_statFilePath {
+    NSString *filePath = [self hook_statFilePath];
+    NSString *newCachePath = [NSObject realFilePathWithOriginFilePath:filePath originKeyword:@"/Documents"];
+    if (newCachePath) {
+        return newCachePath;
+    } else {
+        return filePath;
+    }
+}
+
+/** 可利用磁盘空间 */
++ (unsigned long long)hook_getFreeDiskSpace {
+    NSString *documentPath = [NSSearchPathForDirectoriesInDomains(0x9, 0x1, 0x1) firstObject];
+    if (documentPath.length == 0) {
+        return [self hook_getFreeDiskSpace];
+    }
+    
+    NSString *newDocumentPath = [self realFilePathWithOriginFilePath:documentPath originKeyword:@"/Documents"];
+    if (newDocumentPath.length > 0) {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSDictionary *dict = [fileManager attributesOfFileSystemForPath:newDocumentPath error:nil];
+        if (dict) {
+            NSNumber *freeSize = [dict objectForKey:NSFileSystemFreeSize];
+            unsigned long long freeSieValue = [freeSize unsignedLongLongValue];
+            return freeSieValue;
+        }
+    }
+    return [self hook_getFreeDiskSpace];
+}
+
++ (id)hook_mappedKVPathWithID:(id)arg1 {
+    NSString *mappedKVPath = [self hook_mappedKVPathWithID:arg1];
+    NSString *newMappedKVPath = [self realFilePathWithOriginFilePath:mappedKVPath originKeyword:@"/Documents/MMappedKV"];
+    if (newMappedKVPath) {
+        return newMappedKVPath;
+    } else {
+        return mappedKVPath;
+    }
+}
+
++ (id)hook_getSysDocumentPath {
+    NSString *sysDocumentPath = [self hook_getSysDocumentPath];
+    NSString *newSysDocumentPath = [self realFilePathWithOriginFilePath:sysDocumentPath originKeyword:@"/Library/Application Support"];
+    if (newSysDocumentPath) {
+        return newSysDocumentPath;
+    } else {
+        return sysDocumentPath;
+    }
+}
+
++ (id)hook_getSysLibraryPath {
+    NSString *libraryPath = [self hook_getSysLibraryPath];
+    NSString *newLibraryPath = [self realFilePathWithOriginFilePath:libraryPath originKeyword:@"/Library"];
+    if (newLibraryPath) {
+        return newLibraryPath;
+    } else {
+        return libraryPath;
+    }
+}
+
++ (id)hook_getSysCachePath {
+    NSString *cachePath = [self hook_getSysCachePath];
+    NSString *newCachePath = [self realFilePathWithOriginFilePath:cachePath originKeyword:@"/Library/Caches"];
+    if (newCachePath) {
+        return newCachePath;
+    } else {
+        return cachePath;
+    }
+}
+
++ (id)realFilePathWithOriginFilePath:(NSString *)filePath originKeyword:(NSString *)keyword {
+    NSRange range = [filePath rangeOfString:keyword];
+    if (range.length > 0) {
+        NSMutableString *newFilePath = [filePath mutableCopy];
+        NSString *subString = [NSString stringWithFormat:@"/Library/Containers/com.tencent.xinWeChat/Data%@",keyword];
+        [newFilePath replaceCharactersInRange:range withString:subString];
+        return newFilePath;
+    } else {
+        return nil;
+    }
+}
 @end

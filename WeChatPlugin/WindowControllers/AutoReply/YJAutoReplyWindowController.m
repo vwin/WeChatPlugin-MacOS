@@ -52,7 +52,7 @@
     NSScrollView *scrollView = ({
         NSScrollView *scrollView = [[NSScrollView alloc] init];
         scrollView.hasVerticalScroller = YES;
-        scrollView.frame = NSMakeRect(30, 50, 200, 350);
+        scrollView.frame = NSMakeRect(30, 50, 200, 375);
         scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         
         scrollView;
@@ -74,7 +74,7 @@
     
     self.contentView = ({
         YJAutoReplyContentView *contentView = [[YJAutoReplyContentView alloc] init];
-        contentView.frame = NSMakeRect(250, 50, 400, 350);
+        contentView.frame = NSMakeRect(250, 50, 400, 375);
         contentView.hidden = YES;
         
         contentView;
@@ -134,6 +134,7 @@
     
     __weak typeof(self) weakSelf = self;
     self.contentView.endEdit = ^(void) {
+        
         [weakSelf.tableView reloadData];
         if (weakSelf.lastSelectIndex != -1) {
             [weakSelf.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:weakSelf.lastSelectIndex] byExtendingSelection:YES];
@@ -146,9 +147,7 @@
     [[WeChatPluginConfig sharedInstance] setReplyPreventRevokeEnable:btn.state];
 }
 
-/**
- 关闭窗口事件
- */
+/** 关闭窗口事件 */
 - (BOOL)windowShouldClose:(id)sender {
     [[WeChatPluginConfig sharedInstance] saveAutoReplyModelsToFile];
     return YES;

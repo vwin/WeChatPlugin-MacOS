@@ -38,6 +38,7 @@
         if (model.hasEmptyKeywordOrReplyContent) {
             model.replyEnable = NO;
             model.replyGroupEnable = NO;
+            model.enableRegex = NO;
         }
         model.replyContent = model.replyContent == nil ? @"" : model.replyContent;
         model.keyword = model.keyword == nil ? @"" : model.keyword;
