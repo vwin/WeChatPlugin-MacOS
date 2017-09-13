@@ -14,6 +14,9 @@ static NSString *const YJPreventRevokeEnableKey = @"YJPreventRevokeEnableKey";
 /** 单聊撤销自动发出是否可用 */
 static NSString *const YJReplyPreventRevokeEnableKey = @"YJReplyPreventRevokeEnableKey";
 
+/** 自动发出消息随机延时 */
+static NSString *const kYJReplyRandomDelayEnableKey = @"kYJReplyRandomDelayEnableKey";
+
 /** 自动回复保存地址 */
 static NSString *const YJAutoReplyModelsFilePath = @"/Applications/WeChat.app/Contents/MacOS/WeChatPlugin.framework/Resources/YJAutoReplyModels.plist";
 /** 远程控制的配置文件地址 */
@@ -48,6 +51,7 @@ static NSString * const YJRemoteControlAppleScript = @"osascript /Applications/W
 
 @property (nonatomic, assign) BOOL preventRevokeEnable;             /**< 防止撤销是否可用 */
 @property (nonatomic, assign) BOOL replyPreventRevokeEnable;        /**< 撤销自动单聊发出是否可用 */
+@property (nonatomic, assign) BOOL replyRandomDelayEnable;          /**< 自动发出消息随机延时 */
 
 @property (nonatomic, strong) NSMutableArray *autoReplyModels;      /**< 自动回复数组 */
 @property (nonatomic, strong) NSMutableArray *remoteControlModels;  /**< 远程控制数组 */

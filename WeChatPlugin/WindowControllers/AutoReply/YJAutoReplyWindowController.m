@@ -12,7 +12,7 @@
 #import "WeChatPluginConfig.h"
 #import "YJAutoReplyControlCell.h"
 
-@interface YJAutoReplyWindowController () <NSWindowDelegate, NSTableViewDelegate, NSTableViewDataSource>
+@interface YJAutoReplyWindowController () <NSWindowDelegate, NSTableViewDelegate, NSTableViewDataSource, NSTextFieldDelegate>
 
 @property (nonatomic, strong) NSTableView *tableView;
 @property (nonatomic, strong) YJAutoReplyContentView *contentView;
@@ -24,6 +24,7 @@
 @property (nonatomic, assign) NSInteger lastSelectIndex;
 
 @property (nonatomic, strong) NSButton *replyPreventRevokeBtn;
+@property (nonatomic, strong) NSButton *replyRandomBtn;
 
 @end
 
@@ -49,10 +50,14 @@
 }
 
 - (void)initSubviews {
+    
+    CGFloat contentViewHeight = 375.0f;
+    
     NSScrollView *scrollView = ({
         NSScrollView *scrollView = [[NSScrollView alloc] init];
         scrollView.hasVerticalScroller = YES;
-        scrollView.frame = NSMakeRect(30, 50, 200, 375);
+        CGFloat scrollViewY = 50;
+        scrollView.frame = NSMakeRect(30, scrollViewY, 200, contentViewHeight);
         scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
         
         scrollView;
@@ -74,7 +79,7 @@
     
     self.contentView = ({
         YJAutoReplyContentView *contentView = [[YJAutoReplyContentView alloc] init];
-        contentView.frame = NSMakeRect(250, 50, 400, 375);
+        contentView.frame = NSMakeRect(250, 50, 400, contentViewHeight);
         contentView.hidden = YES;
         
         contentView;
@@ -82,7 +87,7 @@
     
     self.addButton = ({
         NSButton *btn = [NSButton buttonWithTitle:@"＋" target:self action:@selector(addModel)];
-        btn.frame = NSMakeRect(30, 10, 40, 40);
+        btn.frame = NSMakeRect(30, 8, 40, 40);
         btn.bezelStyle = NSBezelStyleTexturedRounded;
         
         btn;
@@ -90,17 +95,25 @@
     
     self.reduceButton = ({
         NSButton *btn = [NSButton buttonWithTitle:@"－" target:self action:@selector(reduceModel)];
-        btn.frame = NSMakeRect(80, 10, 40, 40);
+        btn.frame = NSMakeRect(80, 8, 40, 40);
         btn.bezelStyle = NSBezelStyleTexturedRounded;
         btn.enabled = NO;
         
         btn;
-    });
+    });    
     
     self.replyPreventRevokeBtn = ({
-        NSButton *btn = [NSButton checkboxWithTitle:@"是否开启单聊撤回消息自动发出" target:self action:@selector(clickReplyPreventRevokeBtn:)];
-        btn.frame = NSMakeRect(270, 20, 400, 20);
+        NSButton *btn = [NSButton checkboxWithTitle:@"开启撤回消息自动发回(仅单聊)" target:self action:@selector(clickReplyPreventRevokeBtn:)];
+        btn.frame = NSMakeRect(270, 16, 200, 20);
         btn.state = [[WeChatPluginConfig sharedInstance] replyPreventRevokeEnable];
+        btn;
+    });
+    
+    self.replyRandomBtn = ({
+        NSButton *btn = [NSButton checkboxWithTitle:@"开启随机延时(最长3秒)" target:self action:@selector(clickReplyRandomDelayBtn:)];
+        btn.frame = NSMakeRect(CGRectGetMaxX(self.replyPreventRevokeBtn.frame) + 15, 16, 165, 20);
+        btn.state = [[WeChatPluginConfig sharedInstance] replyRandomDelayEnable];
+        
         btn;
     });
     
@@ -116,6 +129,7 @@
     scrollView.contentView.documentView = self.tableView;
     
     [self.window.contentView addSafeSubviews:@[scrollView,
+                                               self.replyRandomBtn,
                                                self.contentView,
                                                self.addButton,
                                                self.reduceButton,
@@ -145,6 +159,11 @@
 - (void)clickReplyPreventRevokeBtn:(NSButton *)btn{
     
     [[WeChatPluginConfig sharedInstance] setReplyPreventRevokeEnable:btn.state];
+}
+
+- (void)clickReplyRandomDelayBtn:(NSButton *)btn{
+    
+    [[WeChatPluginConfig sharedInstance] setReplyRandomDelayEnable:btn.state];
 }
 
 /** 关闭窗口事件 */

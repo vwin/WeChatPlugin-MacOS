@@ -4,9 +4,9 @@
 <array>
 	<dict>
 		<key>keyword</key>
-		<string>在吗||在||哈喽||你好||您好||在?||在？</string>
+		<string>亲爱的</string>
 		<key>replyContent</key>
-		<string>您好, 我是他的小助手，有什么事情呢？告诉我吧，立即转达给我的主人||您好，主人在冬眠，请问有什么事?</string>
+		<string>谁是你亲爱的</string>
 		<key>replyGroupEnable</key>
 		<false/>
 		<key>replyEnable</key>
@@ -52,9 +52,9 @@
 	</dict>
 	<dict>
 		<key>keyword</key>
-		<string>你在干嘛||你在干吗||你在干嘛?||你在干吗?||你在干嘛？||你在干吗？||在干吗||在干嘛||在干吗?||在干嘛?||在干吗？||在干嘛？</string>
+		<string>你在干嘛?||你在干吗?||你在干嘛？||你在干嘛呢?||你在干嘛呢？||你在干吗？||干啥?||在吗||哈喽||你好||您好||在？||在?</string>
 		<key>replyContent</key>
-		<string>嗯，是的。要不你排下队稍等一会儿？马上回来~||你猜||我在洗澡||嗯，是的，在干</string>
+		<string>嗯，是的。要不你排下队稍等一会儿？马上回来~||你猜||我在洗澡||您好, 我是他的小助手，有什么事情呢？告诉我吧，立即转达给我的主人||您好，主人在冬眠，请问有什么事?</string>
 		<key>replyGroupEnable</key>
 		<false/>
 		<key>replyEnable</key>

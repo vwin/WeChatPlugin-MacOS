@@ -181,7 +181,9 @@ static char kYJRemoteControlWindowControllerKey;
             
             // 单聊自动发回撤销开启 toUsrName 他人发给聊天室的
             if ([WeChatPluginConfig sharedInstance].replyPreventRevokeEnable && ![newMsgData.toUsrName containsString:@"@chatroom"] && replyContent != nil) {
-                [self preventRevokeAutoReplyWith:msgService selfContact:selfContact messageData:newMsgData sendContent:replyContent];
+                
+                [self _autoRandomSendTextMessageWithNsUsrName:selfContact.m_nsUsrName toUsrName:newMsgData.toUsrName msgContent:replyContent];
+                
             }else{ // 添加本地撤回消息
                 [msgService AddLocalMsg:session msgData:newMsgData];
             }
@@ -235,7 +237,6 @@ static char kYJRemoteControlWindowControllerKey;
     if (msgContact.m_uiFriendScene == 0 && ![addMsg.fromUserName.string containsString:@"@chatroom"]) { return;}
     
     // 2.非公众号
-    MessageService *service = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
     WCContactData *selfContact = [contactStorage GetSelfContact];
     
     NSArray *autoReplyModels = [[WeChatPluginConfig sharedInstance] autoReplyModels];
@@ -263,39 +264,33 @@ static char kYJRemoteControlWindowControllerKey;
         // 6.自动回复内容
         NSArray *replyArray = [model.replyContent componentsSeparatedByString:@"||"];
         NSString *randomReplyContent = [replyArray objectAtIndex:(arc4random() % replyArray.count)];
+        NSString *m_nsUsrName = selfContact.m_nsUsrName;
+        NSString *toUsrName = addMsg.fromUserName.string;
         
         // 7.没有回复内容自动停止
         if (randomReplyContent == nil || randomReplyContent.length == 0) { return;}
         
         if (model.enableRegex) {
             NSString *regex = model.keyword;
-            NSError *error;
-            NSRegularExpression *regular = [NSRegularExpression regularExpressionWithPattern:regex options:NSRegularExpressionCaseInsensitive error:&error];
-            if (error) return;
-            NSInteger count = [regular numberOfMatchesInString:msgContent options:NSMatchingReportCompletion range:NSMakeRange(0, msgContent.length)];
-            if (count > 0) {
-                [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:randomReplyContent atUserList:nil];
+            
+            BOOL isContainsString = [regex containsString:msgContent];
+            
+            if (isContainsString && randomReplyContent.length > 0) {
+                
+                [self _autoRandomSendTextMessageWithNsUsrName:m_nsUsrName toUsrName:toUsrName msgContent:randomReplyContent];
             }
         } else {
             
             NSArray * keyWordArray = [model.keyword componentsSeparatedByString:@"||"];
             
             [keyWordArray enumerateObjectsUsingBlock:^(NSString *keyword, NSUInteger idx, BOOL * _Nonnull stop) {
-                if ([keyword isEqualToString:@"*"] || [msgContent isEqualToString:keyword]) {
-                    [service SendTextMessage:selfContact.m_nsUsrName toUsrName:addMsg.fromUserName.string msgText:randomReplyContent atUserList:nil];
+                if (([keyword isEqualToString:@"*"] || [msgContent isEqualToString:keyword]) && randomReplyContent.length > 0) {
+                    
+                    [self _autoRandomSendTextMessageWithNsUsrName:m_nsUsrName toUsrName:toUsrName msgContent:randomReplyContent];
                 }
             }];
         }
     }];
-}
-
-- (void)preventRevokeAutoReplyWith:(MessageService *)msgService selfContact:(WCContactData *)selfContact messageData:(MessageData *)messageData sendContent:(NSString *)sendContent{
-    
-    // 1是文本 3是
-//    if (messageData.messageType != 1 && messageData.messageType != 3) {return;}
-    
-    // 2.发送
-    [msgService SendTextMessage:selfContact.m_nsUsrName toUsrName:messageData.toUsrName msgText:sendContent atUserList:nil];
 }
 
 /** 远程控制 */
@@ -303,6 +298,18 @@ static char kYJRemoteControlWindowControllerKey;
     if (addMsg.msgType == 1 || addMsg.msgType == 3) {
         [YJRemoteControlController executeRemoteControlCommandWithMessage:addMsg.content.string];
     }
+}
+
+#pragma mark - 自动发送消息
+- (void)_autoRandomSendTextMessageWithNsUsrName:(id)nsUsrName toUsrName:(id)toUsrName msgContent:(id)msgContent{
+    
+    MessageService *service = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
+    // 随机延时发送
+    NSTimeInterval delayInSeconds = ([WeChatPluginConfig sharedInstance].replyRandomDelayEnable)?((arc4random() % 31) * 0.10):0; // 随机延时范围是0s~2s
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [service SendTextMessage:nsUsrName toUsrName:toUsrName msgText:msgContent atUserList:nil];
+    });
 }
 
 #pragma mark - Support

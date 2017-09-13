@@ -27,6 +27,7 @@
     if (self) {
         _preventRevokeEnable = [[NSUserDefaults standardUserDefaults] boolForKey:YJPreventRevokeEnableKey];
         _replyPreventRevokeEnable = [[NSUserDefaults standardUserDefaults] boolForKey:YJReplyPreventRevokeEnableKey];
+        _replyRandomDelayEnable = [[NSUserDefaults standardUserDefaults] boolForKey:kYJReplyRandomDelayEnableKey];
     }
     return self;
 }
@@ -65,7 +66,7 @@
     
     _preventRevokeEnable = preventRevokeEnable;
     
-    // 保存可用状态
+    // 保存状态
     [[NSUserDefaults standardUserDefaults] setBool:preventRevokeEnable forKey:YJPreventRevokeEnableKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -74,8 +75,17 @@
     
     _replyPreventRevokeEnable = replyPreventRevokeEnable;
     
-    // 保存可用状态
+    // 保存状态
     [[NSUserDefaults standardUserDefaults] setBool:replyPreventRevokeEnable forKey:YJReplyPreventRevokeEnableKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)setReplyRandomDelayEnable:(BOOL)replyRandomDelayEnable{
+    
+    _replyRandomDelayEnable = replyRandomDelayEnable;
+    
+    // 保存状态
+    [[NSUserDefaults standardUserDefaults] setBool:replyRandomDelayEnable forKey:kYJReplyRandomDelayEnableKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

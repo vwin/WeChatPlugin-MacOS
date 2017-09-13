@@ -33,23 +33,23 @@
 
 - (void)initSubviews {
     
-    self.enableRegexBtn = ({
-        NSButton *btn = [NSButton checkboxWithTitle:@"开启正则匹配" target:self action:@selector(clickEnableRegexBtn:)];
-        btn.frame = NSMakeRect(20, 15, 400, 20);
+    self.enableGroupReplyBtn = ({
+        NSButton *btn = [NSButton checkboxWithTitle:@"开启群聊自动回复" target:self action:@selector(clickEnableGroupBtn:)];
+        btn.frame = NSMakeRect(20, 15, 180, 20);
         
         btn;
     });
     
-    self.enableGroupReplyBtn = ({
-        NSButton *btn = [NSButton checkboxWithTitle:@"开启群聊自动回复" target:self action:@selector(clickEnableGroupBtn:)];
-        btn.frame = NSMakeRect(20, 40, 400, 20);
+    self.enableRegexBtn = ({
+        NSButton *btn = [NSButton checkboxWithTitle:@"开启模糊匹配" target:self action:@selector(clickEnableRegexBtn:)];
+        btn.frame = NSMakeRect(235, 15, 400, 20);
         
         btn;
     });
     
     self.autoReplyContentField = ({
         NSTextField *textField = [[NSTextField alloc] init];
-        textField.frame = NSMakeRect(20, 70, 350, 175);
+        textField.frame = NSMakeRect(20, CGRectGetMaxY(self.enableGroupReplyBtn.frame) + 15, 360, 200);
         textField.placeholderString = @"请输入自动回复的内容";
         textField.delegate = self;
         
@@ -57,15 +57,15 @@
     });
     
     self.autoReplyLabel = ({
-        NSTextField *label = [NSTextField labelWithString:@"自动回复："];
-        label.frame = NSMakeRect(20, 250, 350, 20);
+        NSTextField *label = [NSTextField labelWithString:@"自动回复:"];
+        label.frame = NSMakeRect(20, CGRectGetMaxY(self.autoReplyContentField.frame) + 6, 350, 20);
         
         label;
     });
     
     self.keywordTextField = ({
         NSTextField *textField = [[NSTextField alloc] init];
-        textField.frame = NSMakeRect(20, 290, 350, 50);
+        textField.frame = NSMakeRect(20, CGRectGetMaxY(self.autoReplyLabel.frame) + 6, 360, 60);
         textField.placeholderString = @"请输入关键字（ ‘*’ 为任何消息都回复，‘||’ 为匹配多个关键字）";
         textField.delegate = self;
         
@@ -73,8 +73,8 @@
     });
     
     self.keywordLabel = ({
-        NSTextField *label = [NSTextField labelWithString:@"关键字："];
-        label.frame = NSMakeRect(20, 345, 350, 20);
+        NSTextField *label = [NSTextField labelWithString:@"关键字:"];
+        label.frame = NSMakeRect(20, CGRectGetMaxY(self.keywordTextField.frame) + 6, 350, 20);
         
         label;
     });
@@ -103,7 +103,7 @@
     [super viewDidMoveToSuperview];
     self.layer.backgroundColor = [[NSColor windowBackgroundColor] CGColor];
     self.layer.borderWidth = 1;
-    self.layer.borderColor = [[NSColor lightGrayColor] CGColor];
+    self.layer.borderColor = [[NSColor colorWithRed:0.82 green:0.82 blue:0.82 alpha:1.00] CGColor];
     self.layer.cornerRadius = 3;
     self.layer.masksToBounds = YES;
     [self.layer setNeedsDisplay];
