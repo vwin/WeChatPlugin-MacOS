@@ -46,6 +46,9 @@
 	
 #### 自动回复
 
+* 自动回复设置 <br />
+	<img src="https://ws2.sinaimg.cn/large/006tKfTcly1fjhw18lkb4j30ik0d6jtr.jpg" width="668" height="474" />
+
 * 单聊和群聊一样 <br />
   	<img src="https://ws3.sinaimg.cn/large/006tKfTcly1fjb37sg128g30qy0jm0u0.gif" width="727" height="530" />
 
