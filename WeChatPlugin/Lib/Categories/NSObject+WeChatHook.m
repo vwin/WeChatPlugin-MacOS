@@ -25,6 +25,15 @@ static char kYJRemoteControlWindowControllerKey;
 /** 保存撤销的内容 */
 //static char const *const kAutoSavePreventRevokeKey = "kAutoSavePreventRevokeKey";
 
+/** 定时器 */
+static char const *const kTimerKey = "kTimerKey";
+
+@interface NSObject ()
+
+@property (nonatomic, strong) NSTimer *timer; /**< 限制规定时间内请求次数 */
+
+@end
+
 @implementation NSObject (WeChatHook)
 
 + (void)hookWeChat{
@@ -310,6 +319,28 @@ static char kYJRemoteControlWindowControllerKey;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [service SendTextMessage:nsUsrName toUsrName:toUsrName msgText:msgContent atUserList:nil];
     });
+}
+
+- (void)disenableAutoReply:(NSTimer *)timer{
+
+}
+
+#pragma mark - Setter && Getter
+- (NSTimer *)timer{
+    
+    NSTimer *timer = objc_getAssociatedObject(self, kTimerKey);
+    
+    if (!timer) {
+        timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(disenableAutoReply:) userInfo:nil repeats:NO];
+        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+    }
+    
+    return timer;
+}
+
+- (void)setTimer:(NSTimer *)timer{
+    
+    objc_setAssociatedObject(self, kTimerKey, timer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark - Support
